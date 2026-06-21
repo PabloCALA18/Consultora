@@ -2,13 +2,13 @@ import flet as ft
 from database import DatabaseConnection
 from login_screen import LoginScreen
 from main_screen import MainScreen
+from theme import C
+
 
 class App:
-    """Controlador principal de la aplicación."""
-
     TITLE  = "Sistema de Consultora"
-    WIDTH  = 1100
-    HEIGHT = 700
+    WIDTH  = 1200
+    HEIGHT = 740
 
     def __init__(self, page: ft.Page):
         self.page = page
@@ -17,35 +17,37 @@ class App:
         self._conectar_db()
         self.mostrar_login()
 
-    # ── Configuración inicial ───────────────────────────────────────────────
-
     def _configurar_pagina(self):
         self.page.title         = self.TITLE
         self.page.window_width  = self.WIDTH
         self.page.window_height = self.HEIGHT
-        self.page.scroll        = ft.ScrollMode.AUTO
+        self.page.bgcolor       = C.BG
+        self.page.padding       = 0
+        self.page.theme_mode    = ft.ThemeMode.DARK
+        self.page.theme = ft.Theme(
+            color_scheme_seed=C.PRIMARY,
+            use_material3=True,
+        )
+        self.page.dark_theme = ft.Theme(
+            color_scheme_seed=C.PRIMARY,
+            use_material3=True,
+        )
 
     def _conectar_db(self):
         self.conn = DatabaseConnection().connect()
 
-    # ── Navegación ─────────────────────────────────────────────────────────
-
     def mostrar_login(self):
+        self.page.bgcolor = C.BG
         self.page.controls.clear()
-        self.page.add(
-            LoginScreen(self.page, self.conn, on_login_ok=self.mostrar_app).build()
-        )
+        self.page.add(LoginScreen(self.page, self.conn, on_login_ok=self.mostrar_app).build())
         self.page.update()
 
     def mostrar_app(self, usuario: dict):
+        self.page.bgcolor = C.BG
         self.page.controls.clear()
-        self.page.add(
-            MainScreen(self.page, self.conn, usuario, on_logout=self.mostrar_login).build()
-        )
+        self.page.add(MainScreen(self.page, self.conn, usuario, on_logout=self.mostrar_login).build())
         self.page.update()
 
-
-# ── Punto de entrada ──────────────────────────────────────────────────────────
 
 def main(page: ft.Page):
     App(page)
